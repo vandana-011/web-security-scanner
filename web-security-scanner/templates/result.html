@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scan Results - {{ url }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">&#128737; SecurityScan</a>
+      <a href="/report" class="nav-link">Download Report</a>
+    </div>
+  </nav>
+
+  <div class="results-page">
+
+    <div class="results-header">
+      <div class="results-target">
+        <span class="results-label">Scanned target</span>
+        <span class="results-url">{{ url }}</span>
+      </div>
+      <div class="risk-badge risk-{{ results.risk_level | lower }}">
+        {{ results.risk_level }}
+      </div>
+    </div>
+
+    {% if not results.availability.available %}
+      <div class="alert-error">
+        Could not connect to <strong>{{ url }}</strong>.
+        {% if results.availability.error %}
+          &mdash; {{ results.availability.error }}
+        {% endif %}
+      </div>
+    {% else %}
+
+      <div class="result-grid">
+
+        <!-- Security Headers -->
+        <div class="result-card">
+          <div class="card-header">
+            <span class="card-icon">&#128272;</span>
+            <span class="card-title">Security Headers</span>
+          </div>
+
+          {% if results.headers.missing %}
+            <div class="finding-section">
+              <div class="finding-label finding-warn">Missing ({{ results.headers.missing | length }})</div>
+              {% for h in results.headers.missing %}
+                <div class="finding-row sev-medium">
+                  <span class="sev-badge med">Medium</span> {{ h }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if results.headers.present %}
+            <div class="finding-section">
+              <div class="finding-label finding-ok">Present ({{ results.headers.present | length }})</div>
+              {% for h in results.headers.present %}
+                <div class="finding-row sev-ok">
+                  <span class="sev-badge ok">&#10003;</span> {{ h }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- SQL Injection -->
+        <div class="result-card">
+          <div class="card-header">
+            <span class="card-icon">&#128201;</span>
+            <span class="card-title">SQL Injection</span>
+          </div>
+          {% if results.sql_injection.vulnerable %}
+            <div class="vuln-alert vuln-high">
+              &#9888; Vulnerable — database error signatures detected.
+            </div>
+            {% for d in results.sql_injection.details %}
+              <div class="finding-row sev-high">
+                <span class="sev-badge high">High</span> Payload: <code>{{ d.payload }}</code>
+              </div>
+            {% endfor %}
+          {% elif results.sql_injection.note %}
+            <div class="vuln-safe">{{ results.sql_injection.note }}</div>
+          {% else %}
+            <div class="vuln-safe">&#10003; No SQL injection detected.</div>
+          {% endif %}
+        </div>
+
+        <!-- XSS -->
+        <div class="result-card">
+          <div class="card-header">
+            <span class="card-icon">&#128187;</span>
+            <span class="card-title">Cross-Site Scripting (XSS)</span>
+          </div>
+          {% if results.xss.vulnerable %}
+            <div class="vuln-alert vuln-high">
+              &#9888; Reflected XSS detected in form inputs.
+            </div>
+            {% for d in results.xss.details %}
+              <div class="finding-row sev-high">
+                <span class="sev-badge high">High</span> Form: <code>{{ d.form_action or '/' }}</code> ({{ d.method | upper }})
+              </div>
+            {% endfor %}
+          {% elif results.xss.note %}
+            <div class="vuln-safe">{{ results.xss.note }}</div>
+          {% else %}
+            <div class="vuln-safe">&#10003; No reflected XSS detected.</div>
+          {% endif %}
+        </div>
+
+        <!-- Directory Enumeration -->
+        <div class="result-card">
+          <div class="card-header">
+            <span class="card-icon">&#128193;</span>
+            <span class="card-title">Directory Enumeration</span>
+          </div>
+          {% if results.directories.found %}
+            <div class="vuln-alert vuln-medium">
+              &#9888; {{ results.directories.found | length }} exposed path(s) found.
+            </div>
+            {% for d in results.directories.found %}
+              <div class="finding-row sev-medium">
+                <span class="sev-badge med">Medium</span> <code>{{ d }}</code>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="vuln-safe">&#10003; No exposed directories found.</div>
+          {% endif %}
+        </div>
+
+      </div><!-- /result-grid -->
+
+      <div class="actions-row">
+        <a href="/" class="btn-secondary">&#8592; Scan Another</a>
+        <a href="/report" class="btn-primary">View Full Report &#8594;</a>
+      </div>
+
+    {% endif %}
+  </div>
+
+</body>
+</html>

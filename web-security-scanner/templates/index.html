@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Security Scanner</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <span class="nav-logo">&#128737; SecurityScan</span>
+      <a href="/report" class="nav-link">View Last Report</a>
+    </div>
+  </nav>
+
+  <main class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">OWASP Top 10 · Powered by Python</div>
+      <h1 class="hero-title">Web Application<br>Security Scanner</h1>
+      <p class="hero-sub">Detect SQL Injection, XSS, missing security headers, and exposed directories in seconds.</p>
+
+      {% if error %}
+        <div class="alert-error">{{ error }}</div>
+      {% endif %}
+
+      <form action="/scan" method="POST" class="scan-form">
+        <div class="input-row">
+          <input
+            type="text"
+            name="url"
+            placeholder="https://example.com"
+            class="url-input"
+            required
+          />
+          <button type="submit" class="scan-btn">Scan Now &#8594;</button>
+        </div>
+        <p class="form-note">Only scan websites you own or have permission to test.</p>
+      </form>
+    </div>
+  </main>
+
+  <section class="features-section">
+    <div class="features-grid">
+      <div class="feat-card">
+        <div class="feat-icon">&#128272;</div>
+        <div class="feat-title">Security Headers</div>
+        <div class="feat-desc">Checks for CSP, HSTS, X-Frame-Options, and more.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">&#128201;</div>
+        <div class="feat-title">SQL Injection</div>
+        <div class="feat-desc">Tests URL parameters for database injection flaws.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">&#128187;</div>
+        <div class="feat-title">XSS Detection</div>
+        <div class="feat-desc">Injects payloads into forms to find reflected XSS.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">&#128193;</div>
+        <div class="feat-title">Directory Scan</div>
+        <div class="feat-desc">Probes for exposed /admin, /backup, /config, and more.</div>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

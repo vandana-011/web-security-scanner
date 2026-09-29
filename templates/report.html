@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scan Report</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">&#128737; SecurityScan</a>
+      <a href="/" class="nav-link">&#8592; New Scan</a>
+    </div>
+  </nav>
+
+  <div class="report-page">
+    <h2 class="report-title">Scan Report</h2>
+    <pre class="report-pre">{{ content }}</pre>
+  </div>
+
+</body>
+</html>
